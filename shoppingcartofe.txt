@@ -1,0 +1,87 @@
+# shopping_cart.py
+
+class Product:
+    def _init_(self, name, price):
+        self.name = name
+        self.price = price
+
+    def _str_(self):
+        return f"{self.name} - ₹{self.price}"
+
+
+class ShoppingCart:
+    def _init_(self):
+        self.cart = []
+
+    def add_product(self, product):
+        self.cart.append(product)
+        print(f"✅ '{product.name}' added to cart.")
+
+    def view_cart(self):
+        if not self.cart:
+            print("🛒 Your cart is empty.")
+        else:
+            print("\n🛍 Items in your cart:")
+            total = 0
+            for i, item in enumerate(self.cart, 1):
+                print(f"{i}. {item}")
+                total += item.price
+            print(f"Total Amount: ₹{total}\n")
+
+    def save_to_file(self, filename="cart.txt"):
+        try:
+            with open(filename, 'w') as file:
+                for item in self.cart:
+                    file.write(f"{item.name},{item.price}\n")
+            print("💾 Cart saved successfully.")
+        except Exception as e:
+            print(f"❌ Error saving cart: {e}")
+
+    def load_from_file(self, filename="cart.txt"):
+        try:
+            with open(filename, 'r') as file:
+                for line in file:
+                    try:
+                        name, price = line.strip().split(',')
+                        self.cart.append(Product(name, int(price)))
+                    except ValueError:
+                        print(f"⚠ Skipping bad line in file: {line.strip()}")
+            print("📂 Cart loaded from file.")
+        except FileNotFoundError:
+            print("📁 No saved cart found. Starting fresh.")
+        except Exception as e:
+            print(f"❌ Error loading cart: {e}")
+
+
+def main():
+    cart = ShoppingCart()
+    cart.load_from_file()
+
+    while True:
+        print("\n--- Shopping Cart Menu ---")
+        print("1. Add Product")
+        print("2. View Cart")
+        print("3. Save Cart")
+        print("4. Exit")
+        choice = input("Enter your choice (1-4): ")
+
+        if choice == '1':
+            try:
+                name = input("Enter product name: ")
+                price = int(input("Enter product price: ₹"))
+                cart.add_product(Product(name, price))
+            except ValueError:
+                print("❌ Price must be a number.")
+        elif choice == '2':
+            cart.view_cart()
+        elif choice == '3':
+            cart.save_to_file()
+        elif choice == '4':
+            print("👋 Exiting. Have a great day!")
+            break
+        else:
+            print("⚠ Invalid choice. Please enter 1-4.")
+
+
+if _name_ == "_main_":
+    main()
